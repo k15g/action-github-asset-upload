@@ -3,7 +3,9 @@
 ```yaml
 - name: Upload asset
   uses: k15g/action-github-asset-upload@edge
+  if: startsWith(github.ref, 'refs/tags/v')
   with:
-    owner: k15g
-    repo: action-github-release-info
+    token: ${{ secrets.GITHUB_TOKEN }}
+    file: distribution.tar.gz
+    label: Distribution
 ```
