@@ -14,13 +14,13 @@ async function run() {
     const name = core.getInput('name') || path.basename(file);
     const content_type = core.getInput('type') || mime.lookup(name) || 'application/octet-stream';
     const label = core.getInput('label') || undefined;
-    const ref = process.env.GITHUB_REF;
-    if (!ref.match(ref_matcher))
-        return core.setFailed('Provided GITHUB_REF is not a tag reference');
-    const [, tag] = ref.match(ref_matcher);
-    const [, owner, repo] = process.env.GITHUB_REPOSITORY.match(/^(.+)\/(.+)$/);
     if (!fs.existsSync(file))
         return core.setFailed(`File '${file}' not found`);
+    const ref = process.env.GITHUB_REF;
+    if (!ref.match(ref_matcher))
+        return core.warning(`Provided GITHUB_REF is not a tag reference, add "if: startsWith(github.ref, 'refs/tags/')" to skip this action when not build a tag.`);
+    const [, tag] = ref.match(ref_matcher);
+    const [, owner, repo] = process.env.GITHUB_REPOSITORY.match(/^(.+)\/(.+)$/);
     github.repos.getReleaseByTag({ owner, repo, tag }).then(release => {
         const release_id = release.data.id;
         const data = fs.readFileSync(file);
