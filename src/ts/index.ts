@@ -49,7 +49,7 @@ async function run() {
             core.setOutput('state', upload.data.state)
             core.setOutput('browser_download_url', upload.data.browser_download_url)
 
-            core.info("Successful upload")
+            core.info("✅ Successful upload")
         }).catch(err => {
             if (err.response.data.errors) {
                 switch (err.response.data.errors[0].code) {
