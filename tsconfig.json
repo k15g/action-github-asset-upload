@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "sourceMap": false,
+        "noImplicitAny": true,
+        "module": "commonjs",
+        "target": "es2018",
+        "jsx": "react",
+        "allowJs": true,
+        "removeComments": true,
+        "pretty": false,
+        "typeRoots": [
+            "./node_modules/@types"
+        ]
+    },
+    "include": [
+        "src/ts/**/*.ts",
+    ]
+}

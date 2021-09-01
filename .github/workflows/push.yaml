@@ -1,0 +1,60 @@
+name: Build action
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [ released ]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Fetch npm dependencies
+      run: npm install
+
+    - name: Build
+      run: make build
+
+    - name: Prepare version labels
+      uses: k15g/action-version-labels@edge
+      with:
+        prefix: project
+
+    - name: Copy readme
+      run: cat README.md | sed "s:@edge:@${{ env.PROJECT_CHANNEL }}:g" > dist/README.md
+
+    - name: Package distribution
+      run: cd dist && tar -czf ../${{ github.event.repository.name }}-${{ env.PROJECT_VERSION }}.tar.gz *
+
+    - name: Upload distribution (artifact)
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ github.event.repository.name }}-${{ env.PROJECT_VERSION }}
+        path: ${{ github.event.repository.name }}-${{ env.PROJECT_VERSION }}.tar.gz
+        retention-days: 3
+
+    - name: Upload distribution (release)
+      uses: ./dist
+      if: startsWith(github.ref, 'refs/tags/v')
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ github.event.repository.name }}-${{ env.PROJECT_VERSION }}.tar.gz
+        label: Distribution for GitHub Actions
+
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./dist
+        publish_branch: ${{ env.PROJECT_CHANNEL }}
+        enable_jekyll: true
+        user_name: ${{ secrets.BOT_USERNAME }}
+        user_email: ${{ secrets.BOT_EMAIL }}
