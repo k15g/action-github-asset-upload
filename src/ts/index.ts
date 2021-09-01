@@ -18,21 +18,21 @@ async function run() {
     const content_type = core.getInput('type') || mime.lookup(name) || 'application/octet-stream'
     const label = core.getInput('label') || undefined
 
+    // Check existence of file
+    if (!fs.existsSync(file))
+        return core.setFailed(`File '${file}' not found`)
+
     // Get reference
     const ref = process.env.GITHUB_REF
 
     if (!ref.match(ref_matcher))
-        return core.setFailed('Provided GITHUB_REF is not a tag reference')
+        return core.warning(`Provided GITHUB_REF is not a tag reference, add "if: startsWith(github.ref, 'refs/tags/')" to skip this action when not build a tag.`)
 
     // Get tag
     const [, tag] = ref.match(ref_matcher)
 
     // Get owner and repo
     const [, owner, repo] = process.env.GITHUB_REPOSITORY.match(/^(.+)\/(.+)$/)
-
-    // Check existence of file
-    if (!fs.existsSync(file))
-        return core.setFailed(`File '${file}' not found`)
 
     // Load release
     github.repos.getReleaseByTag({ owner, repo, tag }).then(release => {

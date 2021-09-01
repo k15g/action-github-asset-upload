@@ -43,7 +43,7 @@ jobs:
 
     - name: Upload distribution (release)
       uses: ./dist
-      if: startsWith(github.ref, 'refs/tags/v')
+      #if: startsWith(github.ref, 'refs/tags/v')
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{ github.event.repository.name }}-${{ env.PROJECT_VERSION }}.tar.gz
