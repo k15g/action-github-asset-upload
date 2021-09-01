@@ -1,0 +1,28 @@
+name: Asset upload
+description: ...
+author: Erlend Klakegg Bergheim
+
+inputs:
+  token:
+    description: GitHub token or PAT
+    required: true
+  file:
+    description: File to upload
+    required: true
+  name:
+    description: File name after upload
+    required: false
+  type:
+    description: Explicit content type
+    required: false
+  label:
+    description: Asset label
+    required: false
+
+branding:
+  color: green
+  icon: download
+
+runs:
+  using: node12
+  main: index.js
